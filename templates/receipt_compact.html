@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Кассовый чек</title>
+    <style>
+        body {
+            font-family: "DejaVu Sans", "Roboto", Arial, sans-serif;
+            background: #fff;
+            color: #222;
+        }
+        .receipt {
+            width: 320px;
+            margin: 0 auto;
+            border: 1px dashed #bbb;
+            padding: 16px 8px;
+            background: #f9f9f9;
+        }
+        h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            font-size: 0.95em;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 4px 2px;
+            border-bottom: 1px dotted #ccc;
+            text-align: left;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        .total {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        @page { size: 80mm auto; margin: 5mm; }
+        body { color: #20333b; font-size: 9px; }
+        .receipt { width: 70mm; padding: 2mm 0; border: 0; background: #fff; }
+        .brand { display: flex; align-items: center; gap: 7px; padding-bottom: 8px; border-bottom: 1.5px solid #19766f; }
+        .logo { width: 31px; height: 31px; flex: none; }
+        .company-name { color: #174b4b; font-size: 12px; font-weight: 700; }
+        .company-details { margin-top: 3px; color: #53666a; font-size: 7px; line-height: 1.45; }
+        h3 { margin: 10px 0 6px; color: #174b4b; font-size: 14px; }
+        .meta { line-height: 1.65; }
+        table { margin-top: 8px; }
+        thead { background: #174b4b; color: #fff; }
+        tbody tr:nth-child(even) { background: #edf4f2; }
+        tbody td { border-bottom: 1px dotted #b8c9c6; }
+        .number { text-align: right; white-space: nowrap; }
+        .total { padding: 8px 5px; background: #e7f2ef; color: #174b4b; font-size: 13px; }
+        .footer { margin-top: 10px; padding-top: 8px; border-top: 1px solid #cbd6d5; text-align: center; color: #53666a; }
+        .footer img { display: block; width: 70px; height: 70px; margin: 0 auto 4px; }
+        @media print { .receipt { width: 100%; } }
+        body { color: #142b32; font-size: 12px; }
+        .company-details { color: #344b52; font-size: 9px; }
+        h3 { font-size: 16px; }
+        .meta { color: #142b32; font-size: 12px; }
+        th { background-color: #174b4b; color: #fff; font-size: 11px; font-weight: 700; border: 1px solid #174b4b; }
+        td { color: #142b32; font-size: 11px; }
+        .total { color: #103f40; font-size: 15px; }
+        .footer { color: #344b52; font-size: 11px; }
+    </style>
+</head>
+<body>
+<div class="receipt">
+    <header class="brand">
+        <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Логотип Меридиан">
+            <rect x="2" y="2" width="44" height="44" rx="10" fill="#174b4b"/>
+            <path d="M13 33V15h4l7 9 7-9h4v18h-4V21l-7 9-7-9v12z" fill="#fff"/>
+        </svg>
+        <div>
+            <div class="company-name">ООО «Меридиан»</div>
+            <div class="company-details">ИНН 0000000000<br>г. Москва, ул. Примерная, д. 10<br>+7 (495) 000-00-00</div>
+        </div>
+    </header>
+    <h3>Чек №{{ invoice_id }}</h3>
+    <div class="meta"><div>Дата: {{ date }}</div><div>Покупатель: {{ customer }}</div></div>
+    <table>
+        <thead><tr><th>Товар</th><th class="number">Кол.</th><th class="number">Цена</th><th class="number">Сумма</th></tr></thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td class="number">{{ item.quantity }}</td>
+                <td class="number">{{ item.price }} ₽</td>
+                <td class="number">{{ item.quantity * item.price }} ₽</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="total">Итого: {{ total }} ₽</div>
+    <footer class="footer"><img src="{{ qr_code_base64 }}" alt="QR-код чека">Данные чека в QR-коде</footer>
+</div>
+</body>
+</html>

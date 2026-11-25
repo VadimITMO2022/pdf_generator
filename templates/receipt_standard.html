@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Чек</title>
+    <style>
+        body {
+            font-family: "DejaVu Sans", "Roboto", Arial, sans-serif;
+            margin: 40px;
+            color: #222;
+            background: #fff;
+        }
+        .receipt {
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 480px;
+            margin: auto;
+            background: #fafafa;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        th, td {
+            border: 1px solid #bbb;
+            padding: 8px 6px;
+            text-align: left;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        .total {
+            text-align: right;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        @page { size: A4; margin: 15mm; }
+        body { margin: 0; color: #20333b; font-size: 12px; }
+        .receipt { max-width: none; padding: 26px 30px; border-color: #cbd6d5; border-radius: 0; background: #fff; }
+        .brand { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 2px solid #19766f; }
+        .logo { width: 48px; height: 48px; flex: none; }
+        .company-name { color: #174b4b; font-size: 18px; font-weight: 700; }
+        .company-details { margin-top: 5px; color: #53666a; line-height: 1.55; }
+        h2 { margin: 22px 0 16px; color: #174b4b; font-size: 22px; text-align: left; }
+        .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; margin-bottom: 18px; }
+        .meta strong { color: #20333b; }
+        table { border-collapse: collapse; }
+        thead { background: #174b4b; color: #fff; }
+        tbody tr:nth-child(even) { background: #edf4f2; }
+        tbody td { border: 0; border-bottom: 1px solid #dce5e3; }
+        th, td { padding: 10px 8px; }
+        .number { text-align: right; white-space: nowrap; }
+        .total { display: flex; justify-content: flex-end; align-items: baseline; gap: 18px; margin: 18px 0 26px; padding: 13px 15px; background: #e7f2ef; border-right: 4px solid #19766f; }
+        .total-label { font-size: 13px; }
+        .total-value { color: #174b4b; font-size: 21px; }
+        .bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding-top: 16px; border-top: 1px solid #cbd6d5; }
+        .qr-block { display: flex; align-items: center; gap: 10px; color: #53666a; font-size: 10px; }
+        .qr-block img { width: 82px; height: 82px; }
+        .signature { position: relative; width: 250px; min-height: 112px; padding: 10px; border: 1px solid #b9c9c7; color: #53666a; }
+        .signature-label { max-width: 135px; line-height: 1.5; }
+        .stamp { position: absolute; right: 8px; bottom: 1px; width: 115px; height: 115px; transform: rotate(-12deg); opacity: .75; }
+        @media print { .receipt { border: 0; padding: 0; } }
+        body { color: #142b32; font-size: 15px; }
+        .company-details { color: #344b52; font-size: 13px; }
+        h2 { font-size: 26px; }
+        .meta { font-size: 15px; }
+        th { background-color: #174b4b; color: #fff; font-size: 14px; font-weight: 700; border: 1px solid #174b4b; }
+        td { color: #142b32; font-size: 14px; }
+        .total-label { color: #142b32; font-size: 16px; font-weight: 700; }
+        .total-value { color: #103f40; font-size: 25px; }
+        .qr-block, .signature { color: #344b52; font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="receipt">
+    <header class="brand">
+        <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Логотип Меридиан">
+            <rect x="2" y="2" width="44" height="44" rx="10" fill="#174b4b"/>
+            <path d="M13 33V15h4l7 9 7-9h4v18h-4V21l-7 9-7-9v12z" fill="#fff"/>
+        </svg>
+        <div>
+            <div class="company-name">ООО «Меридиан»</div>
+            <div class="company-details">ИНН 0000000000 · г. Москва, ул. Примерная, д. 10<br>Телефон: +7 (495) 000-00-00</div>
+        </div>
+    </header>
+    <h2>Товарный чек №{{ invoice_id }}</h2>
+    <div class="meta"><div><strong>Дата:</strong> {{ date }}</div><div><strong>Покупатель:</strong> {{ customer }}</div></div>
+    <table>
+        <thead><tr><th>Товар</th><th class="number">Кол-во</th><th class="number">Цена</th><th class="number">Сумма</th></tr></thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td class="number">{{ item.quantity }}</td>
+                <td class="number">{{ item.price }} ₽</td>
+                <td class="number">{{ item.quantity * item.price }} ₽</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="total"><span class="total-label">Итого к оплате</span><span class="total-value">{{ total }} ₽</span></div>
+    <footer class="bottom">
+        <div class="qr-block"><img src="{{ qr_code_base64 }}" alt="QR-код чека"><span>Данные чека<br>в QR-коде</span></div>
+        <div class="signature">
+            <div class="signature-label">М.П. / Подпись<br>ответственного лица</div>
+            <svg class="stamp" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="Печать организации">
+                <defs><path id="seal-circle" d="M60,60 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs>
+                <circle cx="60" cy="60" r="48" fill="none" stroke="#1765a0" stroke-width="2.5"/>
+                <circle cx="60" cy="60" r="36" fill="none" stroke="#1765a0" stroke-width="1.5"/>
+                <text fill="#104f82" font-size="9" font-weight="bold"><textPath href="#seal-circle" startOffset="4%">ООО «МЕРИДИАН» · ИНН 0000000000 · </textPath></text>
+                <text x="60" y="57" text-anchor="middle" fill="#104f82" font-size="10" font-weight="bold">МЕРИДИАН</text>
+                <text x="60" y="69" text-anchor="middle" fill="#104f82" font-size="8">МОСКВА · РОССИЯ</text>
+            </svg>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
